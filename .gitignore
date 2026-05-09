@@ -1,1 +1,30 @@
+# Data — never commit raw data
+data/
+*.csv
 
+# Model checkpoints
+models/
+*.pth
+*.pt
+*.ckpt
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.env
+.venv
+env/
+
+# Experiments / logs
+experiments/*.log
+runs/
+
+# OS
+.DS_Store
+Thumbs.db
