@@ -1,100 +1,55 @@
-{
- "cells": [
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "id": "856617b3-ac7b-471b-9240-5f9bda4b41ad",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "\"\"\"Smoke tests — run the full pipeline on a tiny synthetic subset\n",
-    "to verify shapes/types before touching real data.\n",
-    "\n",
-    "Run with: pytest tests/\n",
-    "\"\"\"\n",
-    "\n",
-    "import torch\n",
-    "import pytest\n",
-    "from torch.utils.data import DataLoader, TensorDataset\n",
-    "\n",
-    "from src.models.baseline_mlp import BaselineMLP\n",
-    "from src.utils.metrics import compute_metrics, accuracy\n",
-    "from src.utils.config import Config\n",
-    "\n",
-    "\n",
-    "def make_dummy_loader(n: int = 16, num_classes: int = 4) -> DataLoader:\n",
-    "    \"\"\"Create a tiny dummy DataLoader for smoke tests.\"\"\"\n",
-    "    images = torch.randn(n, 3, 224, 224)\n",
-    "    labels = torch.randint(0, num_classes, (n,))\n",
-    "    return DataLoader(TensorDataset(images, labels), batch_size=8)\n",
-    "\n",
-    "\n",
-    "def test_mlp_output_shape() -> None:\n",
-    "    \"\"\"MLP must produce logits of shape (B, num_classes).\"\"\"\n",
-    "    cfg = Config()\n",
-    "    model = BaselineMLP(\n",
-    "        input_dim=3 * 224 * 224,\n",
-    "        hidden_dims=cfg.MLP_HIDDEN_DIMS,\n",
-    "        num_classes=cfg.NUM_CLASSES,\n",
-    "        dropout=cfg.MLP_DROPOUT,\n",
-    "    )\n",
-    "    model.eval()\n",
-    "    dummy = torch.randn(8, 3, 224, 224)\n",
-    "    with torch.no_grad():\n",
-    "        out = model(dummy)\n",
-    "    assert out.shape == (8, cfg.NUM_CLASSES), f\"Expected (8, {cfg.NUM_CLASSES}), got {out.shape}\"\n",
-    "\n",
-    "\n",
-    "def test_accuracy_range() -> None:\n",
-    "    \"\"\"Accuracy must be between 0 and 1.\"\"\"\n",
-    "    outputs = torch.randn(32, 4)\n",
-    "    labels = torch.randint(0, 4, (32,))\n",
-    "    acc = accuracy(outputs, labels)\n",
-    "    assert 0.0 <= acc <= 1.0\n",
-    "\n",
-    "\n",
-    "def test_compute_metrics_keys() -> None:\n",
-    "    \"\"\"compute_metrics must return all required keys.\"\"\"\n",
-    "    outputs = torch.randn(32, 4)\n",
-    "    labels = torch.randint(0, 4, (32,))\n",
-    "    metrics = compute_metrics(outputs, labels)\n",
-    "    assert \"accuracy\" in metrics\n",
-    "    assert \"f1_macro\" in metrics\n",
-    "    assert \"balanced_accuracy\" in metrics\n",
-    "\n",
-    "\n",
-    "def test_pipeline_runs() -> None:\n",
-    "    \"\"\"Full forward pass through model on a dummy batch must not crash.\"\"\"\n",
-    "    loader = make_dummy_loader()\n",
-    "    model = BaselineMLP()\n",
-    "    model.eval()\n",
-    "    for images, labels in loader:\n",
-    "        with torch.no_grad():\n",
-    "            out = model(images)\n",
-    "        assert out.shape[1] == 4\n",
-    "        break"
-   ]
-  }
- ],
- "metadata": {
-  "kernelspec": {
-   "display_name": "Python 3 (ipykernel)",
-   "language": "python",
-   "name": "python3"
-  },
-  "language_info": {
-   "codemirror_mode": {
-    "name": "ipython",
-    "version": 3
-   },
-   "file_extension": ".py",
-   "mimetype": "text/x-python",
-   "name": "python",
-   "nbconvert_exporter": "python",
-   "pygments_lexer": "ipython3",
-   "version": "3.13.9"
-  }
- },
- "nbformat": 4,
- "nbformat_minor": 5
-}
+import torch
+import pytest
+from torch.utils.data import DataLoader, TensorDataset
+
+from src.models.baseline_mlp import BaselineMLP
+from src.utils.metrics import compute_metrics, accuracy
+from src.utils.config import Config
+
+
+def make_dummy_loader(n: int = 16, num_classes: int = 4) -> DataLoader:
+    images = torch.randn(n, 3, 224, 224)
+    labels = torch.randint(0, num_classes, (n,))
+    return DataLoader(TensorDataset(images, labels), batch_size=8)
+
+
+def test_mlp_output_shape() -> None:
+    cfg = Config()
+    model = BaselineMLP(
+        input_dim=3 * 224 * 224,
+        hidden_dims=cfg.MLP_HIDDEN_DIMS,
+        num_classes=cfg.NUM_CLASSES,
+        dropout=cfg.MLP_DROPOUT,
+    )
+    model.eval()
+    dummy = torch.randn(8, 3, 224, 224)
+    with torch.no_grad():
+        out = model(dummy)
+    assert out.shape == (8, cfg.NUM_CLASSES)
+
+
+def test_accuracy_range() -> None:
+    outputs = torch.randn(32, 4)
+    labels = torch.randint(0, 4, (32,))
+    acc = accuracy(outputs, labels)
+    assert 0.0 <= acc <= 1.0
+
+
+def test_compute_metrics_keys() -> None:
+    outputs = torch.randn(32, 4)
+    labels = torch.randint(0, 4, (32,))
+    metrics = compute_metrics(outputs, labels)
+    assert "accuracy" in metrics
+    assert "f1_macro" in metrics
+    assert "balanced_accuracy" in metrics
+
+
+def test_pipeline_runs() -> None:
+    loader = make_dummy_loader()
+    model = BaselineMLP()
+    model.eval()
+    for images, labels in loader:
+        with torch.no_grad():
+            out = model(images)
+        assert out.shape[1] == 4
+        break

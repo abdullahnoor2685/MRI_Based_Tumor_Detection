@@ -1,23 +1,17 @@
-{
- "cells": [
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "id": "63f76605-e8ae-4b70-9e26-9f408dea1ccb",
-   "metadata": {},
-   "outputs": [],
-   "source": []
-  }
- ],
- "metadata": {
-  "kernelspec": {
-   "display_name": "",
-   "name": ""
-  },
-  "language_info": {
-   "name": ""
-  }
- },
- "nbformat": 4,
- "nbformat_minor": 5
-}
+class Config:
+    DATA_DIR: str = "data/"
+    IMAGE_SIZE: int = 224
+    NUM_CLASSES: int = 4
+    NUM_WORKERS: int = 4
+    BATCH_SIZE: int = 32
+    EPOCHS: int = 30
+    LR: float = 1e-3
+    WEIGHT_DECAY: float = 1e-4
+    EARLY_STOPPING_PATIENCE: int = 5
+    GRAD_CLIP: float = 1.0
+    SEED: int = 42
+    CHECKPOINT_DIR: str = "models/"
+    LOG_DIR: str = "experiments/"
+    REPORT_DIR: str = "reports/"
+    MLP_HIDDEN_DIMS: list = [512, 256]
+    MLP_DROPOUT: float = 0.4
