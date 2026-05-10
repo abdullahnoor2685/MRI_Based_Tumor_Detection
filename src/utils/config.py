@@ -3,8 +3,8 @@ class Config:
     IMAGE_SIZE: int = 224
     NUM_CLASSES: int = 4
     NUM_WORKERS: int = 4
-    BATCH_SIZE: int = 32
-    EPOCHS: int = 30
+    BATCH_SIZE: int = 64
+    EPOCHS: int = 10
     LR: float = 1e-3
     WEIGHT_DECAY: float = 1e-4
     EARLY_STOPPING_PATIENCE: int = 5
