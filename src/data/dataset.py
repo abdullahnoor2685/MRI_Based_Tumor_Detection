@@ -52,3 +52,31 @@ class MRIDataset(Dataset):
         for _, label in self.samples:
             counts[self.idx_to_class[label]] += 1
         return counts
+from torch.utils.data import DataLoader
+from torchvision import transforms
+
+def get_dataloaders(cfg):
+    # Standard transforms
+    transform = transforms.Compose([
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+
+    # Path to your actual data structure (data/raw/train and data/raw/val)
+    base_path = Path(__file__).parent.parent.parent 
+    train_path = base_path / "data" / "raw" / "train"
+    val_path = base_path / "data" / "raw" / "val"
+
+    # Check if paths exist to avoid the WinError 3
+    if not train_path.exists():
+        raise FileNotFoundError(f"Missing training folder at: {train_path}")
+
+    train_dataset = MRIDataset(root_dir=str(train_path), transform=transform)
+    val_dataset = MRIDataset(root_dir=str(val_path), transform=transform)
+
+    # Use batch size from config
+    train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False)
+    
+    return train_loader, val_loader, None

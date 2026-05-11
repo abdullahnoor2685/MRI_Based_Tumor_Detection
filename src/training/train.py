@@ -103,3 +103,22 @@ def train_model(model, train_loader, val_loader, cfg=None):
     model.load_state_dict(torch.load(best_checkpoint, map_location=device))
     logger.info("Training complete. Best model loaded.")
     return model
+if __name__ == "__main__":
+    # Load Config without arguments if it doesn't support them
+    cfg = Config() 
+    
+    # Manually ensure the right config file is used if your class has a load method
+    cfg.load('configs/unreg.yaml') 
+
+    from src.data.dataset import get_dataloaders
+    from src.models.cnn_backbone import tumorCNN
+
+    # Get Data
+    train_loader, val_loader, _ = get_dataloaders(cfg)
+
+    # Initialize Model
+    model = tumorCNN(num_classes=4)
+
+    # Start Training
+    logger.info("Starting Unregularized Baseline Run...")
+    train_model(model, train_loader, val_loader, cfg=cfg)
