@@ -1,0 +1,19 @@
+
+model:
+  name: "tumorCNN"
+  num_classes: 4
+  dropout_prob: 0.0  # MANDATORY: Disabled for Task 4 Unregularized run
+
+training:
+  batch_size: 16
+  epochs: 30
+  learning_rate: 0.001
+  weight_decay: 0.0   # MANDATORY: No weight decay
+  momentum: 0.9
+
+augmentation:
+  enabled: false      # MANDATORY: Phase 3 requires training without augmentation first
+
+logging:
+  project_name: "MRI_Tumor_Phase3"
+  run_name: "unregularized_baseline"

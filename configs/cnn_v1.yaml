@@ -1,0 +1,22 @@
+# Phase 3: CNN Backbone Configuration
+model:
+  name: "tumorCNN"
+  num_classes: 4
+  dropout: 0.3 
+
+training:
+  epochs: 50
+  batch_size: 32
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  grad_clip: 1.0  
+
+scheduler:
+  type: "ReduceLROnPlateau"
+  factor: 0.5
+  patience: 3
+  verbose: True
+
+paths:
+  checkpoint_dir: "../experiments/models"
+  logs_dir: "../experiments/logs"
